@@ -33,6 +33,7 @@ typedef struct
 	int32_t subchunk2_size;
 }WaveHeader;
 
+/** Pomocnicza struktura do ukrycia danych*/
 typedef struct
 {
 	char* data_to_hide;
@@ -40,6 +41,11 @@ typedef struct
 	unsigned int current_bit;
 
 }DataToHide;
+
+/** Funkcja ukrywa dane bitowe w poszczególnych bajtach
+@param data_to_hide przekazuje dane, które maja byæ ukryte
+@return funkcja zwraca ukryte dane*/
+unsigned char get_next_bit_pack(DataToHide* data_to_hide);
 /** Funkcja pobiera d³ugoœæ pliku
 @param file wskaŸnik na plik, którego d³ugoœæ szukamy
 @return funkcja zwraca d³ugoœæ pliku*/

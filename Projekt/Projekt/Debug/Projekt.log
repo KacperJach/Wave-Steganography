@@ -1,6 +1,6 @@
 ﻿  wave_parser.c
-C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(69,1): warning C4142: „get_file_length”: nieszkodliwa ponowna definicja typu
-C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.h(46): message : zobacz deklarację „get_file_length”
-C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(233,10): warning C4477: „printf”: ciąg formatu „%d” wymaga argumentu typu „int”, ale argument 1 ze zmienną liczbą argumentów ma typ „char *”
-C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(101): warning C4715: "open_files”: niewszystkie ścieżki kodu zwracają wartość
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(157,1): warning C4142: „get_file_length”: nieszkodliwa ponowna definicja typu
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.h(52): message : zobacz deklarację „get_file_length”
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(122): warning C4716: "read_output_bits": musi zwracać wartość
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(188): warning C4715: "open_files”: niewszystkie ścieżki kodu zwracają wartość
   Projekt.vcxproj -> C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Debug\Projekt.exe
