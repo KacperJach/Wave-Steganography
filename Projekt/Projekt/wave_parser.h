@@ -3,12 +3,10 @@
 #define _WAVE_PARSER_H_
 #define _CRT_SECURE_NO_WARNINGS
 //#define DEBUG
-#define READING(data) { if(data!=1){ printf("Couldn't read from file");  fclose(input); \
-																			fclose(file_to_hide);\
-																			fclose(output);\
-																			free(data_to_hide);\
+#define READING(data) { if(data!=1){ printf("Cannot read from file");  fclose(file); \
 																			return 1; }}
-
+ 
+																			
 #include <stdint.h>
 #include <stdlib.h>	
 #include <stdio.h>
@@ -42,10 +40,19 @@ typedef struct
 
 }DataToHide;
 
+/** Funkcja zapisujaca naglowek pliku WAVE do wyjsciowego pliku WAVE
+@param file przekazuje wskaznik do pliku wave, ktorego naglowek odczytujemy
+@param header wskaznik na strukture przechowujaca naglowek pliku WAVE*/
+void write_header(FILE* file, WaveHeader* header);
+/** Funkcja odczytuj¹ca naglowek pliku WAVE
+@param file przekazuje wskaznik do pliku wave, ktorego naglowek odczytujemy
+@param header wskaznik na strukture przechowujaca naglowek pliku WAVE
+@return funkcja zwraca wskaznik na odczytana strukture plik WAVE*/
+WaveHeader* read_header(FILE* file, WaveHeader* header);
 /** Funkcja ukrywa dane bitowe w poszczególnych bajtach
 @param data_to_hide przekazuje dane, które maja byæ ukryte
 @return funkcja zwraca ukryte dane*/
-unsigned char get_next_bit_pack(DataToHide* data_to_hide);
+unsigned char get_next_bit_pack(DataToHide* data_to_hide, unsigned int bits_to_write);
 /** Funkcja pobiera d³ugoœæ pliku
 @param file wskaŸnik na plik, którego d³ugoœæ szukamy
 @return funkcja zwraca d³ugoœæ pliku*/
@@ -54,11 +61,14 @@ int get_file_length(FILE* file);
 @param path podaje œcie¿kê do pliku wave
 @param path2 podaje nazwê pliku wyjœciowego
 @param path3 podaje œcie¿kê do pliku, w którym znajduj¹ siê bity do ukrycia*/
-int open_files(char path[],char path2[],char path3[]);
+int open_files(char path[],char path2[],char path3[], unsigned int bits_to_write);
 /** Funkcja odczytuje plik wave oraz ukrywa podane bity
-@param file_to_hide wskaŸnik na plik z bitami do ukrycia
-@param file_to_write wskaŸnik na plik, do którego bêdziemy zapisywaæ plik wave z ukrytymi bitami
-@param input wskaŸnik na plik wave*/
-int read_wave(FILE* input, FILE* output, FILE* file_to_hide);
+@param input wskaŸnik na plik wave
+@param output wskaŸnik na plik, do którego bêdziemy zapisywaæ plik wave z ukrytymi bitami
+@param file_to_hide wskaŸnik na plik z bitami do ukrycia*/
+int read_wave(FILE* input, FILE* output, FILE* file_to_hide, unsigned int bits_to_write);
+/** Funkcja odczytujaca zaszyfrowane dane z pliku wave
+@param output wskaŸnik na zaszyforwany plik wave */
+char read_output_bits(FILE* output, unsigned int bits_to_write);
 
 #endif

@@ -1,6 +1,20 @@
 ﻿  wave_parser.c
-C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(157,1): warning C4142: „get_file_length”: nieszkodliwa ponowna definicja typu
-C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.h(52): message : zobacz deklarację „get_file_length”
-C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(122): warning C4716: "read_output_bits": musi zwracać wartość
-C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(188): warning C4715: "open_files”: niewszystkie ścieżki kodu zwracają wartość
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(49,2): warning C4047: "return": "WaveHeader *" różni się w poziomach operatorów pośrednich od "int"
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(51,2): warning C4047: "return": "WaveHeader *" różni się w poziomach operatorów pośrednich od "int"
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(53,2): warning C4047: "return": "WaveHeader *" różni się w poziomach operatorów pośrednich od "int"
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(55,2): warning C4047: "return": "WaveHeader *" różni się w poziomach operatorów pośrednich od "int"
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(57,2): warning C4047: "return": "WaveHeader *" różni się w poziomach operatorów pośrednich od "int"
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(59,2): warning C4047: "return": "WaveHeader *" różni się w poziomach operatorów pośrednich od "int"
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(61,2): warning C4047: "return": "WaveHeader *" różni się w poziomach operatorów pośrednich od "int"
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(63,2): warning C4047: "return": "WaveHeader *" różni się w poziomach operatorów pośrednich od "int"
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(65,2): warning C4047: "return": "WaveHeader *" różni się w poziomach operatorów pośrednich od "int"
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(67,2): warning C4047: "return": "WaveHeader *" różni się w poziomach operatorów pośrednich od "int"
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(69,2): warning C4047: "return": "WaveHeader *" różni się w poziomach operatorów pośrednich od "int"
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(71,2): warning C4047: "return": "WaveHeader *" różni się w poziomach operatorów pośrednich od "int"
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(73,2): warning C4047: "return": "WaveHeader *" różni się w poziomach operatorów pośrednich od "int"
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(176,1): warning C4142: „get_file_length”: nieszkodliwa ponowna definicja typu
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.h(53): message : zobacz deklarację „get_file_length”
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(264,8): warning C4101: "buf": lokalna zmienna, do której nie istnieje odwołanie
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(141): warning C4716: "read_output_bits": musi zwracać wartość
+C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Projekt\wave_parser.c(207): warning C4715: "open_files”: niewszystkie ścieżki kodu zwracają wartość
   Projekt.vcxproj -> C:\Users\Talib\source\repos\aa8348ce-gr04-repo\Projekt\Projekt\Debug\Projekt.exe
