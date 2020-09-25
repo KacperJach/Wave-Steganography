@@ -1,30 +1,28 @@
 #include "wave_parser.h"
 
-
-
-
-
-
-void print_byte_as_bits(char val) {
-	for (int i = 7; 0 <= i; i--) {
-		printf("%c", (val & (1 << i)) ? '1' : '0');
+int check_max_size_data_to_hide(DataToHide* data_to_hide, FILE* input, unsigned int bits_to_write, size_t probe_size)
+{
+	unsigned int pos = ftell(input);
+	fseek(input, 0, SEEK_END);
+	unsigned int rest_length = ftell(input) - pos;
+	fseek(input, pos, SEEK_SET);
+	if (((bits_to_write * rest_length) / probe_size ) < data_to_hide->data_to_hide_length * 8)
+	{
+		return 1;
 	}
+	else return 0;
 }
+void write_rest(FILE* input, FILE* output)
+{
+	unsigned int current_pos = ftell(input);
+	fseek(input, 0, SEEK_END);
+	unsigned int file_rest_length = ftell(input) - current_pos;
+	fseek(input, current_pos, SEEK_SET);
+	char* extra_buf = (char*)malloc(file_rest_length);
+	fread(extra_buf, file_rest_length, 1, input);
+	fwrite(extra_buf, file_rest_length, 1, output);
 
-void print_bits(char* ty, char* val, unsigned char* bytes, size_t num_bytes) {
-	printf("(%*s) %*s = [ ", 15, ty, 16, val);
-	for (size_t i = 0; i < num_bytes; i++) {
-		print_byte_as_bits(bytes[i]);
-		printf(" ");
-	}
-	printf("]\n");
 }
-
-#define SHOW(T,V) do { T x = V; print_bits(#T, #V, (unsigned char*) &x, sizeof(x)); } while(0)
-
-
-
-
 void write_header(FILE* file, WaveHeader* header)
 {
 	fwrite(header->chunk_id, sizeof(header->chunk_id), 1, file);
@@ -44,7 +42,7 @@ void write_header(FILE* file, WaveHeader* header)
 WaveHeader* read_header(FILE* file, WaveHeader* header)
 {
 	int tmp;
-	
+
 	tmp = fread(header->chunk_id, sizeof(header->chunk_id), 1, file);
 	READING(tmp);
 	tmp = fread(&header->chunk_size, sizeof(header->chunk_size), 1, file);
@@ -90,28 +88,28 @@ char read_output_bits(FILE* output, unsigned int bits_to_write)
 	int len;
 	unsigned char result_byte = 0;
 	unsigned int how_many_bits_to_fill_byte = 0;
-	int i = 0;
-
+	
 	FILE* read_data = fopen("output.txt", "wb");
 	int pos = ftell(output);
 	fseek(output, pos - probe_size, SEEK_SET);
 	while ((len = fread(buffer, probe_size, 1, output)) == 1)
 	{
-
 		unsigned char byte = buffer[probe_size - 1];
+
 		if (how_many_bits_to_fill_byte + bits_to_write < 8)
 		{
 			byte = byte << (8 - bits_to_write);
 			byte = byte >> (8 - bits_to_write);
-			byte = byte << how_many_bits_to_fill_byte;
+			result_byte = result_byte << bits_to_write;
 			result_byte += byte;
 			how_many_bits_to_fill_byte += bits_to_write;
 		}
 		else
 		{
-			byte = byte << how_many_bits_to_fill_byte;
-			byte = byte >> how_many_bits_to_fill_byte;
-			byte = byte << how_many_bits_to_fill_byte;
+			byte = byte << (8 - bits_to_write);
+			byte = byte >> (8 - bits_to_write);
+			byte = byte >> (bits_to_write + how_many_bits_to_fill_byte - 8);
+			result_byte = result_byte << (8 - how_many_bits_to_fill_byte);
 			result_byte += byte;
 			if (result_byte == 0)
 			{
@@ -121,23 +119,16 @@ char read_output_bits(FILE* output, unsigned int bits_to_write)
 			fwrite(&result_byte, sizeof(char), 1, read_data);
 			result_byte = 0;
 			byte = buffer[probe_size - 1];
+			byte = byte << (8 - bits_to_write);
+			byte = byte << (8 - how_many_bits_to_fill_byte);
+			byte = byte >> (8 - bits_to_write);
 			byte = byte >> (8 - how_many_bits_to_fill_byte);
-			byte = byte << (how_many_bits_to_fill_byte + 1);
-			byte = byte >> (how_many_bits_to_fill_byte + 1);
 			how_many_bits_to_fill_byte = (how_many_bits_to_fill_byte + bits_to_write) % 8;
 			result_byte += byte;
 		}
-
-
-		//SHOW(unsigned int, byte);
-
 	}
-
-
-
-
-
 }
+
 unsigned char get_next_bit_pack(DataToHide* data_to_hide, unsigned int bits_to_write)
 {
 	unsigned char result = 0;
@@ -149,29 +140,30 @@ unsigned char get_next_bit_pack(DataToHide* data_to_hide, unsigned int bits_to_w
 
 	if (is_everything_in_this_byte)
 	{
+		unsigned int rest = data_to_hide->current_bit % 8;
 		unsigned char current_byte = data_to_hide->data_to_hide[current_byte_no];
-		unsigned char result1 = (unsigned char)(current_byte >> rest);
-		unsigned char result2 = (unsigned char)(result1 << (8 - bits_to_write));
-		result = (unsigned char)(result2 >> (8 - bits_to_write));
+		unsigned char result1 = (unsigned char)(current_byte << (rest));
+		unsigned char result2 = (unsigned char)(result1 >> (rest));
+		result = (unsigned char)(result2 >> (8 - bits_to_write - rest));
+
 	}
 	else
 	{
-		int16_t current_word = (int16_t)(data_to_hide->data_to_hide[current_byte_no + 1] << 8);
-		current_word += (int16_t)data_to_hide->data_to_hide[current_byte_no];
-		int16_t result1 = (int16_t)(current_word >> rest);
-		//printf("First: %d ", result1);
-		int16_t result2 = (int16_t)(result1 << (16 - bits_to_write));
-		//printf("Second: %d ", result2);
-		result = (unsigned char)(result2 >> (16 - bits_to_write));
-		//printf("Third: %d ", result);
-	}
+		unsigned char buf1;
+		unsigned char buf2;
+		buf1 = (data_to_hide->data_to_hide[current_byte_no] << (rest));
+		buf1 = buf1 >> rest;
+		buf2 = (data_to_hide->data_to_hide[current_byte_no + 1] >> (16 - bits_to_write - rest));
+		buf1 = buf1 << (bits_to_write + rest - 8);
 
+		result = (unsigned char)buf1 + buf2;
+	}
 	data_to_hide->current_bit += bits_to_write;
-	//printf("%d \n", data_to_hide->current_bit);
+
 	return result;
 }
 
-unsigned int get_file_length(FILE* file)
+int get_file_length(FILE* file)
 {
 	fseek(file, 0, SEEK_END);
 	unsigned int len = ftell(file);
@@ -215,8 +207,8 @@ int read_wave(FILE* input, FILE* output, FILE* file_to_hide, unsigned int bits_t
 		fprintf(stderr, "Cannot read file's length.");
 	}
 	size_t len;
-	//printf("%d \n \n \n", data_to_hide->data_to_hide_length);
-	data_to_hide->data_to_hide = (char*)calloc(data_to_hide->data_to_hide_length, sizeof(char)); 
+	
+	data_to_hide->data_to_hide = (char*)calloc(data_to_hide->data_to_hide_length, sizeof(char));
 
 	if ((len = fread(data_to_hide->data_to_hide, data_to_hide->data_to_hide_length - 1, sizeof(char), file_to_hide)) != 1)
 	{
@@ -231,12 +223,11 @@ int read_wave(FILE* input, FILE* output, FILE* file_to_hide, unsigned int bits_t
 
 	WaveHeader* header = calloc(1, sizeof(WaveHeader));
 	header = read_header(input, header);
-	
+
 	write_header(output, header);
 
 	size_t probe_size = header->bits_per_sample / 8;
 	unsigned char* buffer = (unsigned char*)calloc(probe_size, sizeof(unsigned char));
-	int64_t i = 0;
 	int how_many_to_shift = bits_to_write;
 	int j = 0;
 	while ((len = fread(buffer, probe_size, 1, input)) == 1 && j < 10000)
@@ -244,7 +235,13 @@ int read_wave(FILE* input, FILE* output, FILE* file_to_hide, unsigned int bits_t
 		fwrite(buffer, sizeof(char), probe_size, output);
 		j++;
 	}
-	
+	int tmp;
+	if((tmp = check_max_size_data_to_hide(data_to_hide, input, bits_to_write, probe_size)) == 1)
+	{
+		fprintf(stderr, "Data to hide is too big to hide in this wave file");
+		return 1;
+	}
+
 	while ((len = fread(buffer, probe_size, 1, input)) == 1 && data_to_hide->current_bit / 8 < data_to_hide->data_to_hide_length)
 	{
 		if (len < 0)
@@ -258,30 +255,15 @@ int read_wave(FILE* input, FILE* output, FILE* file_to_hide, unsigned int bits_t
 			return 1;
 		}
 
-		//SHOW(unsigned char, data_to_hide->data_to_hide[data_to_hide->current_bit / 8]);
-		//printf("%c ", data_to_hide->data_to_hide[data_to_hide->current_bit / 8]);
-		char buf[50];
-		//_itoa(buffer[probe_size - 1], buf, 2);
-
 		buffer[probe_size - 1] = (buffer[probe_size - 1] >> bits_to_write) << bits_to_write;
 		unsigned char extra_bits = get_next_bit_pack(data_to_hide, bits_to_write);
 		buffer[probe_size - 1] += extra_bits;
-
-		//_itoa(extra_bits, buf, 2);
-		//SHOW(unsigned int, extra_bits);
-		//_itoa(buffer[probe_size - 1], buf, 2);
-
 
 		fwrite(buffer, sizeof(char), probe_size, output);
 		buffer[probe_size - 1] = 0;
 	}
 
-
-	while ((len = fread(buffer, probe_size, 1, input)) == 1)
-	{
-		fwrite(buffer, sizeof(char), probe_size, output);
-	}
-
+	write_rest(input, output);
 
 	fclose(file_to_hide);
 	fclose(output);
@@ -309,12 +291,11 @@ int main(int argc, char* argv[])
 	{
 		open_files(argv[1], argv[2], argv[3], bits_to_write);
 	}
-	else 
+	else
 	{
 		FILE* output = fopen(argv[2], "rb");
 		read_output_bits(output, bits_to_write);
 	}
-	
-	
+
 	return 0;
 }
